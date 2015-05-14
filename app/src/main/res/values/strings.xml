@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DetectingActivities</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="actvityDetection">wait activity being detected!</string>
+    <string name="action_settings">Settings</string>
+</resources>
