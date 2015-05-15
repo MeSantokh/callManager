@@ -7,12 +7,12 @@ public class UrgentCallTracker {
 
     private String phoneNumber;
     private int callCounter;
-    private String firstTimestamp;
-    private String lastTimestamp;
+    private Long firstTimestamp;
+    private Long lastTimestamp;
 
 
     public UrgentCallTracker() {};
-    public UrgentCallTracker(String phoneNumber, int callCounter, String firstTimestamp, String lastTimestamp) {
+    public UrgentCallTracker(String phoneNumber, int callCounter, Long firstTimestamp, Long lastTimestamp) {
         this.phoneNumber = phoneNumber;
         this.callCounter = callCounter;
         this.firstTimestamp = firstTimestamp;
@@ -35,19 +35,19 @@ public class UrgentCallTracker {
         this.callCounter = callCounter;
     }
 
-    public String getLastTimestamp() {
+    public Long getLastTimestamp() {
         return lastTimestamp;
     }
 
-    public void setLastTimestamp(String lastTimestamp) {
+    public void setLastTimestamp(Long lastTimestamp) {
         this.lastTimestamp = lastTimestamp;
     }
 
-    public String getFirstTimestamp() {
+    public Long getFirstTimestamp() {
         return firstTimestamp;
     }
 
-    public void setFirstTimestamp(String firstTimestamp) {
+    public void setFirstTimestamp(Long firstTimestamp) {
         this.firstTimestamp = firstTimestamp;
     }
 }

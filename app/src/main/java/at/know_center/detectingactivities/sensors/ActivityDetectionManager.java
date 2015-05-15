@@ -19,6 +19,7 @@ public class ActivityDetectionManager extends BroadcastReceiver {
     public Context context;
     public ActivtiyUpdater updater;
 
+
     public ActivityDetectionManager(Context context, ActivtiyUpdater updater) {
         executer = new ActivityDetectionExecuter(context);
         this.context = context;

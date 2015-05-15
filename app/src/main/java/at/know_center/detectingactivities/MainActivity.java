@@ -5,11 +5,25 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Set;
+
+import at.know_center.detectingactivities.contact.ContactGroup;
+import at.know_center.detectingactivities.contact.Item;
+import at.know_center.detectingactivities.database.DBHelper;
+import at.know_center.detectingactivities.database.PlacesDAO;
+import at.know_center.detectingactivities.database.UrgentCallTrackerDAO;
+import at.know_center.detectingactivities.logik.BlockingCallManager;
+import at.know_center.detectingactivities.logik.DetectedActivityHolder;
+import at.know_center.detectingactivities.model.Place;
+import at.know_center.detectingactivities.model.UrgentCallTracker;
 import at.know_center.detectingactivities.sensors.ActivityDetectionConstParms;
 import at.know_center.detectingactivities.sensors.ActivityDetectionManager;
 import at.know_center.detectingactivities.sensors.ActivtiyUpdater;
@@ -18,14 +32,13 @@ import at.know_center.detectingactivities.sensors.ReceivedCallBlocker;
 
 public class MainActivity extends Activity implements ActivtiyUpdater {
     TextView txtActivityName;
-    ActivityDetectionManager activityDetectionManager;
-    ReceivedCallBlocker callBlockerReceiver;
-
+    BlockingCallManager blockingCallManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         txtActivityName = (TextView)findViewById(R.id.txtActivityName);
+        blockingCallManager = new BlockingCallManager(this, new DetectedActivityHolder());
     }
 
 
@@ -33,18 +46,18 @@ public class MainActivity extends Activity implements ActivtiyUpdater {
     @Override
     protected void onResume() {
         super.onResume();
-        IntentFilter filter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-        callBlockerReceiver = new ReceivedCallBlocker(this);
-        registerReceiver(callBlockerReceiver, filter);
-        activityDetectionManager = new ActivityDetectionManager(this, this);
-        activityDetectionManager.startDetecting();
+        blockingCallManager.startDetecting();
+        blockingCallManager.startBlocking();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(callBlockerReceiver);
-        activityDetectionManager.stopDetecting();
+        // unregisterReceiver(callBlockerReceiver);
+        // activityDetectionManager.stopDetecting();
+        blockingCallManager.startDetecting();
+        blockingCallManager.startBlocking();
+
     }
 
 
@@ -73,38 +86,6 @@ public class MainActivity extends Activity implements ActivtiyUpdater {
     @Override
     public void updateActivity(String activityName, int confidence, long timestamp) {
         txtActivityName.setText("Name " + activityName + ", conf " + String.valueOf(confidence));
-            int inVehicleThreshold = 80;
-
-            if(activityName.equals(ActivityDetectionConstParms.RUNNING)) {
-
-            }
-            else if(activityName.equals(ActivityDetectionConstParms.WALKING)) {
-
-            }
-            else if(activityName.equals(ActivityDetectionConstParms.IN_VEHICLE)) {
-                if(confidence > inVehicleThreshold) {
-
-                }
-
-            }
-            else if(activityName.equals( ActivityDetectionConstParms.ON_BICYCLE)) {
-
-            }
-            else if(activityName.equals(ActivityDetectionConstParms.STILL)) {
-
-            }
-            else if(activityName.equals(ActivityDetectionConstParms.ON_FOOT)) {
-
-            }
-            else if(activityName.equals(ActivityDetectionConstParms.TILTING)) {
-
-            }
-            else {
-
-            }
-
-
-
     }
 
     @Override

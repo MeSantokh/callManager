@@ -3,11 +3,14 @@ package at.know_center.detectingactivities.contact;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.util.Log;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  * Created by santokh on 14.05.15.
@@ -17,13 +20,66 @@ public class ContactGroup {
     private Context context;
     private LinkedHashMap<Item, ArrayList<Item>> groupList;
 
+    private LinkedHashMap<String, ArrayList<Item>> memberBasedGroupList;
+
     public ContactGroup(Context context) {
         this.context = context;
+        memberBasedGroupList =  new LinkedHashMap<String,ArrayList<Item>>();
     }
 
     public LinkedHashMap<Item, ArrayList<Item>> getGroupList() {
-        initContactList();
         return groupList;
+    }
+
+    public LinkedHashMap<String, ArrayList<Item>> getMemberBasedGroupList() {
+        return memberBasedGroupList;
+    }
+
+    public void initContactList(){
+        groupList = new LinkedHashMap<Item,ArrayList<Item>>();
+        ArrayList<Item> groupsList = fetchGroups();
+        for(Item item:groupsList){
+            String[] ids = item.id.split(",");
+            ArrayList<Item> groupMembers =new ArrayList<Item>();
+            for(int i=0;i<ids.length;i++){
+                String groupId = ids[i];
+                groupMembers.addAll(fetchGroupMembers(groupId));
+            }
+            item.name = item.name +" ("+groupMembers.size()+")";
+            groupList.put(item,groupMembers);
+        }
+        createMemberBasedGroupList();
+    }
+
+    private void createMemberBasedGroupList() {
+        Set<Item> contactGroups = groupList.keySet();
+
+        for(Item group : contactGroups){
+            Log.d("ContactGroup", "groupId " + group.id + ", groupName " + group.name);
+            ArrayList<Item> groupMembers = groupList.get(group);
+            for(Item member : groupMembers) {
+
+                if(member.phNo != null) {
+                    Log.d("ContactGroup   ", " memberName " + member.name + ", memberPhoneNr " + member.phNo);
+                    String key = member.phNo;
+                    ArrayList<Item> groupsOfMember = new ArrayList<Item>();
+                    if(memberBasedGroupList.containsKey(key)) {
+                        groupsOfMember.addAll(memberBasedGroupList.get(key));
+                    }
+                    groupsOfMember.add(group);
+                    memberBasedGroupList.put(key, groupsOfMember);
+
+                }
+            }
+        }
+    }
+
+
+    public ArrayList<Item> getContactGroupsByPhoneNumber(String phoneNumber) {
+        if(!memberBasedGroupList.containsKey(phoneNumber)) {
+            return null;
+        }
+        return memberBasedGroupList.get(phoneNumber);
     }
 
     private ArrayList<Item> fetchGroups(){
@@ -44,6 +100,8 @@ public class ContactGroup {
                 groupName = "Favorite";
 
             if(groupName.contains("Starred in Android") || groupName.contains("My Contacts"))
+                continue;
+            if(groupName.contains("mstillalive"))
                 continue;
 
             if(groupTitle.contains(groupName)){
@@ -86,7 +144,7 @@ public class ContactGroup {
             item.id = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.RAW_CONTACT_ID));
             Cursor phoneFetchCursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                     new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.TYPE},
-                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID+"="+item.id,null,null);
+                    ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID+"="+item.id,null,null);
             while(phoneFetchCursor.moveToNext()){
                 item.phNo = phoneFetchCursor.getString(phoneFetchCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 item.phDisplayName = phoneFetchCursor.getString(phoneFetchCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
@@ -99,18 +157,4 @@ public class ContactGroup {
         return groupMembers;
     }
 
-    private void initContactList(){
-        groupList = new LinkedHashMap<Item,ArrayList<Item>>();
-        ArrayList<Item> groupsList = fetchGroups();
-        for(Item item:groupsList){
-            String[] ids = item.id.split(",");
-            ArrayList<Item> groupMembers =new ArrayList<Item>();
-            for(int i=0;i<ids.length;i++){
-                String groupId = ids[i];
-                groupMembers.addAll(fetchGroupMembers(groupId));
-            }
-            item.name = item.name +" ("+groupMembers.size()+")";
-            groupList.put(item,groupMembers);
-        }
-    }
 }
