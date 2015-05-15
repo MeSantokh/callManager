@@ -44,7 +44,7 @@ public class MainActivity extends Activity implements ActivtiyUpdater {
         blockingCallManager = new BlockingCallManager(this, new DetectedActivityHolder());
 
 
-
+/*
         GroupGenerlCallDrivingPermDAO groupGenerlCallDrivingPermDAO = new GroupGenerlCallDrivingPermDAO(this);
         groupGenerlCallDrivingPermDAO.createGroupWithPermission(4, false);
         GroupWithPermission group = groupGenerlCallDrivingPermDAO.getGroupWithPermObj(4);
@@ -53,7 +53,7 @@ public class MainActivity extends Activity implements ActivtiyUpdater {
         groupUrgentCallDrivingPermDAO.createGroupWithPermission(4, true);
         GroupWithPermission group1 = groupUrgentCallDrivingPermDAO.getGroupWithPermObj(4);
         int test;
-
+    */
 
 
     }
