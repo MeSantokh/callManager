@@ -50,24 +50,24 @@ public class DatabaseCallCheckMediator implements IncomingCalllStatus{
     public boolean isIncomingCallBlockable(String phoneNumber, Long timestamp) {
         ArrayList<Item> groups = contactGroup.getContactGroupsByPhoneNumber(phoneNumber);
         if (groups == null) {
-            return false;
+            return true;
         }
         if(detectedActivityHolder.isCurrentActivityInVehicle() &&
              detectedActivityHolder.isInVehicleConfidenceSatisfied() ) {
             if (hasGeneralPermWhileDriving(phoneNumber, groups)) {
-                return true;
+                return false;
             }
 
             if (hasUrgentPermWhileDriving(phoneNumber, groups)) {
                 if (isUrgentCallAccordingToTracker(phoneNumber, timestamp)) {
-                    return true;
+                    return false;
                 }
             }
         }
-        if(hasPlaceBasedPermission(groups)) {
-            return true;
-        }
-        return false;
+        //if(hasPlaceBasedPermission(groups)) {
+          //  return false;
+        //}
+        return true;
     }
 
     public Boolean hasGeneralPermWhileDriving(String phoneNumber,  ArrayList<Item> groups ) {
@@ -85,7 +85,7 @@ public class DatabaseCallCheckMediator implements IncomingCalllStatus{
     public Boolean hasUrgentPermWhileDriving(String phoneNumber,  ArrayList<Item> groups ) {
         for(Item groupItem : groups) {
             if(groupItem.id != null) {
-                GroupWithPermission groupWithPermObj = groupGenerlCallDrivingPermDAO.getGroupWithPermObj(Integer.parseInt(groupItem.id));
+                GroupWithPermission groupWithPermObj = groupUrgentCallDrivingPermDAO.getGroupWithPermObj(Integer.parseInt(groupItem.id));
                 if(groupWithPermObj != null && groupWithPermObj.hasPermission()) {
                     return true;
                 }
@@ -96,6 +96,10 @@ public class DatabaseCallCheckMediator implements IncomingCalllStatus{
 
     public Boolean isUrgentCallAccordingToTracker(String phoneNumber, Long timestamp) {
         UrgentCallTracker trackerObj = urgentCallTrackerDAO.getUrgentCallTrackerByPhoneNumber(phoneNumber);
+        if(trackerObj == null) {
+            urgentCallTrackerDAO.createUrgentCallTracker(phoneNumber, timestamp);
+            return false;
+        }
         if(trackerObj != null) {
             if(trackerObj.getCallCounter() ==  urgentCallAttemptsThreshold-1) {
                 Long firstTimestamp = trackerObj.getFirstTimestamp();
@@ -119,6 +123,7 @@ public class DatabaseCallCheckMediator implements IncomingCalllStatus{
         List<Place> allPlaces = placesDAO.getAllPlaces();
         Place matchedPlace = null;
         for(Place placeItem: allPlaces) {
+            //
             if(placeItem.getCityName().equals(currentPlace.getCityName()) &&
                placeItem.getStreetName().equals(currentPlace.getStreetName()) &&
                placeItem.getStreetNumber() == currentPlace.getStreetNumber()) {

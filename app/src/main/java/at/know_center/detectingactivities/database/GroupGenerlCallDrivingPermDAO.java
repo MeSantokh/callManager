@@ -71,6 +71,14 @@ public class GroupGenerlCallDrivingPermDAO {
                 + " = " + id, null);
     }
 
+    public void updatePermission(GroupWithPermission groupWithPermission) {
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.COLUMN_GENERALDRIVINGCALLGROUPSPERM_PERMISSION, groupWithPermission.getGroupId());
+        database.update(DBHelper.TABLE_GENERALDRIVINGCALLGROUPSPERM, values, DBHelper.COLUMN_GENERALDRIVINGCALLGROUPSPERM_GROUP_ID
+                + " = " + groupWithPermission.getGroupId(), null);
+
+    }
+
     public List<GroupWithPermission> getAllGrouGeneralCallPermObjects() {
         List<GroupWithPermission> listPlaces = new ArrayList<GroupWithPermission>();
 
@@ -92,7 +100,7 @@ public class GroupGenerlCallDrivingPermDAO {
     }
 
     public GroupWithPermission getGroupWithPermObj(Integer groupId) {
-        Cursor cursor = database.query(DBHelper.SQL_CREATE_TABLE_PLACES, allColumns,
+        Cursor cursor = database.query(DBHelper.TABLE_GENERALDRIVINGCALLGROUPSPERM, allColumns,
                 DBHelper.COLUMN_GENERALDRIVINGCALLGROUPSPERM_GROUP_ID + " = ?",
                 new String[]{String.valueOf(groupId)}, null, null, null);
         if (!(cursor.moveToFirst()) || cursor.getCount() == 0) {

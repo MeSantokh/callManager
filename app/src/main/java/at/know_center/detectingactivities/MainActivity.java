@@ -18,10 +18,13 @@ import java.util.Set;
 import at.know_center.detectingactivities.contact.ContactGroup;
 import at.know_center.detectingactivities.contact.Item;
 import at.know_center.detectingactivities.database.DBHelper;
+import at.know_center.detectingactivities.database.GroupGenerlCallDrivingPermDAO;
+import at.know_center.detectingactivities.database.GroupUrgentCallDrivingPermDAO;
 import at.know_center.detectingactivities.database.PlacesDAO;
 import at.know_center.detectingactivities.database.UrgentCallTrackerDAO;
 import at.know_center.detectingactivities.logik.BlockingCallManager;
 import at.know_center.detectingactivities.logik.DetectedActivityHolder;
+import at.know_center.detectingactivities.model.GroupWithPermission;
 import at.know_center.detectingactivities.model.Place;
 import at.know_center.detectingactivities.model.UrgentCallTracker;
 import at.know_center.detectingactivities.sensors.ActivityDetectionConstParms;
@@ -39,6 +42,20 @@ public class MainActivity extends Activity implements ActivtiyUpdater {
         setContentView(R.layout.activity_main);
         txtActivityName = (TextView)findViewById(R.id.txtActivityName);
         blockingCallManager = new BlockingCallManager(this, new DetectedActivityHolder());
+
+
+
+        GroupGenerlCallDrivingPermDAO groupGenerlCallDrivingPermDAO = new GroupGenerlCallDrivingPermDAO(this);
+        groupGenerlCallDrivingPermDAO.createGroupWithPermission(4, false);
+        GroupWithPermission group = groupGenerlCallDrivingPermDAO.getGroupWithPermObj(4);
+
+        GroupUrgentCallDrivingPermDAO groupUrgentCallDrivingPermDAO = new GroupUrgentCallDrivingPermDAO(this);
+        groupUrgentCallDrivingPermDAO.createGroupWithPermission(4, true);
+        GroupWithPermission group1 = groupUrgentCallDrivingPermDAO.getGroupWithPermObj(4);
+        int test;
+
+
+
     }
 
 
@@ -48,13 +65,12 @@ public class MainActivity extends Activity implements ActivtiyUpdater {
         super.onResume();
         blockingCallManager.startDetecting();
         blockingCallManager.startBlocking();
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // unregisterReceiver(callBlockerReceiver);
-        // activityDetectionManager.stopDetecting();
         blockingCallManager.startDetecting();
         blockingCallManager.startBlocking();
 

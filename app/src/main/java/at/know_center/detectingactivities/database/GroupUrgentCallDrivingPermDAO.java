@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.sql.SQLException;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.know_center.detectingactivities.model.GroupWithPermission;
+import at.know_center.detectingactivities.model.Place;
 
 /**
  * Created by santokh on 13.05.15.
@@ -67,6 +69,14 @@ public class GroupUrgentCallDrivingPermDAO {
                 + " = " + id, null);
     }
 
+    public void updatePermission(GroupWithPermission groupWithPermission) {
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.COLUMN_URGENTDRIVINGCALLGROUPSPERM_PERMISSION, groupWithPermission.getGroupId());
+        database.update(DBHelper.TABLE_URGENTDRIVINGCALLGROUPSPERM, values, DBHelper.COLUMN_URGENTDRIVINGCALLGROUPSPERM_GROUP_ID
+                + " = " + groupWithPermission.getGroupId(), null);
+
+    }
+
     public List<GroupWithPermission> getAllGroupUrgentCallPermObjects() {
         List<GroupWithPermission> listPlaces = new ArrayList<GroupWithPermission>();
 
@@ -88,10 +98,10 @@ public class GroupUrgentCallDrivingPermDAO {
         return listPlaces;
     }
 
-    public GroupWithPermission getGroupWithPermObj(String groupId) {
-        Cursor cursor = database.query(DBHelper.SQL_CREATE_TABLE_PLACES, allColumns,
+    public GroupWithPermission getGroupWithPermObj(int groupId) {
+        Cursor cursor = database.query(DBHelper.TABLE_URGENTDRIVINGCALLGROUPSPERM, allColumns,
                 DBHelper.COLUMN_URGENTDRIVINGCALLGROUPSPERM_GROUP_ID + " = ?",
-                new String[]{groupId}, null, null, null);
+                new String[]{ String.valueOf(groupId)}, null, null, null);
         if (!(cursor.moveToFirst()) || cursor.getCount() == 0) {
             Log.d(NAME, "No GroupUrgentCallDrivingPerm object found with groupId " + groupId);
             return null;

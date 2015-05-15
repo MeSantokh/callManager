@@ -110,7 +110,7 @@ public class UrgentCallTrackerDAO {
         Long lastTimeStamp = newTimestamp;
         if (urgentCallTracker.getCallCounter() == 2) {
             callsCounter = 2;
-            firstTimeStamp = lastTimeStamp;
+            firstTimeStamp = urgentCallTracker.getLastTimestamp();
         } else if (urgentCallTracker.getCallCounter() == 1) {
             firstTimeStamp = urgentCallTracker.getFirstTimestamp();
             callsCounter++;
@@ -177,8 +177,9 @@ public class UrgentCallTrackerDAO {
         int index3 = cursor.getColumnIndex(DBHelper.COLUMN_URGENTCALLTRACKER_LAST_TIMESTAMP);
         urgentCallTracker.setPhoneNumber(cursor.getString(index0));
         urgentCallTracker.setCallCounter(cursor.getInt(index1));
-        urgentCallTracker.setFirstTimestamp(Long.parseLong(cursor.getString(index2), 36));
-        urgentCallTracker.setLastTimestamp(Long.parseLong(cursor.getString(index3), 36));
+        urgentCallTracker.setFirstTimestamp(Long.valueOf(cursor.getString(index2)));
+        urgentCallTracker.setLastTimestamp(Long.valueOf(cursor.getString(index3)));
+
 
         return urgentCallTracker;
 

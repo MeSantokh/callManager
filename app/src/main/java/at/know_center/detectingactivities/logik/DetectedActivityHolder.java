@@ -19,7 +19,7 @@ public class DetectedActivityHolder implements ActivtiyUpdater {
     public DetectedActivityHolder() { }
 
     public boolean isCurrentActivityInVehicle() {
-        if(this.currentActivity.equals(ActivityDetectionConstParms.IN_VEHICLE)) {
+        if(this.currentActivity.equals(ActivityDetectionConstParms.STILL)) {
             return true;
         }
         return false;

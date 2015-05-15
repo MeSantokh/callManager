@@ -62,6 +62,7 @@ public class ContactGroup {
                 if(member.phNo != null) {
                     Log.d("ContactGroup   ", " memberName " + member.name + ", memberPhoneNr " + member.phNo);
                     String key = member.phNo;
+                    key = key.replaceAll("\\s","");
                     ArrayList<Item> groupsOfMember = new ArrayList<Item>();
                     if(memberBasedGroupList.containsKey(key)) {
                         groupsOfMember.addAll(memberBasedGroupList.get(key));
@@ -76,6 +77,7 @@ public class ContactGroup {
 
 
     public ArrayList<Item> getContactGroupsByPhoneNumber(String phoneNumber) {
+        phoneNumber = phoneNumber.replaceAll("\\s","");
         if(!memberBasedGroupList.containsKey(phoneNumber)) {
             return null;
         }

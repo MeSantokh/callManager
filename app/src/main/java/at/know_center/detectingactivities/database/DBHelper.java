@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DBHelper extends SQLiteOpenHelper {
     static final String DATABASE_NAME = "callsManagerDB";
-    static final int DATABASE_VERSION = 15;
+    static final int DATABASE_VERSION = 24;
 
     static final String TABLE_PLACES = "places";
     static final String COLUMN_PLACES_ID = "id";
